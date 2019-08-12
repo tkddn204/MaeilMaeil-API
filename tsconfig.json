@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "sourceRoot": "src",
+        "sourceMap": true
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "types": [
+        "node",
+        "aws-sdk"
+    ]
+}

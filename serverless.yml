@@ -1,0 +1,65 @@
+org: ssangwoo
+app: maeilmaeil
+service: maeilmaeil
+
+plugins:
+  - serverless-offline
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: ap-northeast-2
+  stage: dev
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 'arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}'
+
+functions:
+  get:
+    handler: src/todos/get.get
+    events:
+      - http:
+          path: todos/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  list:
+    handler: src/todos/list.list
+    events:
+      - http:
+          path: todos
+          method: get
+          cors: true
+          authorizer: aws_iam
+  create:
+    handler: src/todos/create.create
+    events:
+      - http:
+          path: todos
+          method: post
+          cors: true
+          authorizer: aws_iam
+  update:
+    handler: src/todos/update.update
+    events:
+      - http:
+          path: todos
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+resources:
+  - ${file(resources/api-gateway-errors.yml)}
